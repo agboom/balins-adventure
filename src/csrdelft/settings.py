@@ -64,7 +64,8 @@ INSTALLED_APPS = (
     'forum',
     'maaltijden',
     'mededelingen',
-    'autofixture'
+    'autofixture',
+    'courant'
 )
 
 MIDDLEWARE_CLASSES = (
