@@ -31,6 +31,37 @@ class InGroupPermissionLogic(PermissionLogic):
 
     return False
 
+class UserAttributePermissionLogic(PermissionLogic):
+  """ Non-object specific permission that grants permission if the user
+      has an attribute that has one of the required values provided.
+      So ONLY apply this logic to a model if the logic applies to every instance of this model.
+
+      example:
+        UserAttributePermissionLogic(
+          grants=['somemodel.view'],
+          attr_name='status',
+          required_values=[ Profiel.STATUS.LID ],
+        )
+  """
+
+  def __init__(self, grants, attr_name, required_values):
+    self.attr_name = attr_name
+    self.required_values = required_values
+    self.grants = grants
+
+  def has_perm(self, user, perm, obj=None):
+    if not user.is_authenticated() or perm not in self.grants:
+      return False
+
+    value = field_lookup(user.profiel, self.attr_name)
+
+    # check if user has required value
+    # if user has required value the logic grants permission for any passed object
+    if value in self.required_values:
+      return True
+
+    return False
+
 class MatchFieldPermissionLogic(PermissionLogic):
   """ Permission logic focussed around granting view-, change- and/or delete permissions.
       Based on a user attribute that should match an object attribute
