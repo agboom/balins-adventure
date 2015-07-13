@@ -53,7 +53,7 @@ class UserAttributePermissionLogic(PermissionLogic):
     if not user.is_authenticated() or perm not in self.grants:
       return False
 
-    value = field_lookup(user.profiel, self.attr_name)
+    value = field_lookup(user, self.attr_name)
 
     # check if user has required value
     # if user has required value the logic grants permission for any passed object
