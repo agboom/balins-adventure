@@ -5,6 +5,8 @@ var api = require("api");
 
 var PropTypes = require('react-router').PropTypes;
 
+import * as Actions from './actions'
+
 class MededelingList extends React.Component {
 
 
@@ -28,6 +30,7 @@ class MededelingList extends React.Component {
     this.context.router.transitionTo("mededeling-detail", {id: id});
   }
 
+  // TODO: move to actions
   update() {
     // use the api to get most recent forum threads
     // this returns a promise that we can register our success and error callbacks on
@@ -53,6 +56,38 @@ class MededelingList extends React.Component {
     // make sure we unset the update at interval
     // at the end of the component lifecycle
     window.clearInterval(this.interval);
+  }
+
+  // render from flux state
+  render() {
+    return (
+      <Connector select={state => ({ todos: state.todos })}>
+        {this.renderChild}
+      </Connector>
+    );
+  }
+
+  renderChild({ mededelingen, dispatch }) {
+    const actions = bindActionCreators(Actions, dispatch);
+    return (
+      <div>
+        <Header addTodo={actions.addTodo} />
+        <MainSection todos={todos} actions={actions} />
+      </div>
+    );
+    // TODO fix this for flux
+    return <div>
+      <h1>Mededelingen</h1>
+      <ul>
+        {
+          _.map(this.state.mededelingen, (mededeling, i) => {
+            return <li>
+              <a data-id={mededeling.id} onClick={this.go}>{mededeling.titel}</a>
+            </li>
+          })
+        }
+      </ul>
+    </div>;
   }
 
   render() {
